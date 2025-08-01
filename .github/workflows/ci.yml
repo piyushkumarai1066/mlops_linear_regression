@@ -32,8 +32,9 @@ jobs:
       - name: Train and Quantize
         run: |
           pip install -r requirements.txt
-          python src/train.py
-          python src/quantize.py
+          PYTHONPATH=. python src/train.py
+          PYTHONPATH=. python src/quantize.py
+
 
   build-and-test-container:
     needs: train-and-quantize
