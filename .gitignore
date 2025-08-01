@@ -1,0 +1,6 @@
+ECHO is on.
+__pycache__/
+*.pyc
+*.pkl
+*.joblib
+venv/
