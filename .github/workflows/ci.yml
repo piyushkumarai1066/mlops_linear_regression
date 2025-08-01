@@ -18,7 +18,7 @@ jobs:
           pip install -r requirements.txt
       - name: Run Tests
         run: |
-          pytest
+          PYTHONPATH=./ pytest  # 👈 Adds `src/` to the import path
 
   train-and-quantize:
     needs: test-suite
