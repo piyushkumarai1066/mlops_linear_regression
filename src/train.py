@@ -2,7 +2,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 import joblib
 import os
-import numpy as np  # Add this import
+import numpy as np  
 from src.utils import load_data
 
 def train_and_save_model():
@@ -17,7 +17,7 @@ def train_and_save_model():
     print(f"R2 Score: {r2}")
     print(f"MSE: {mse}")
     
-    # ✅ Add this to print sample predictions
+    
     print("Sample predictions:", np.round(preds[:5], 3))
 
     os.makedirs("models", exist_ok=True)
