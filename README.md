@@ -1,109 +1,131 @@
-# MLOps Linear Regression Pipeline
+🏡 California Housing - MLOps Linear Regression Pipeline
+🎯 Objective
+This project implements a complete MLOps pipeline focused on Linear Regression using the California Housing Dataset, covering:
 
-## Objective
-This project implements an end-to-end MLOps pipeline for Linear Regression using the California Housing Dataset, focusing on:
+✅ Data loading & preprocessing
 
-- Model training & evaluation
-- Manual quantization
-- Docker-based inference
-- CI/CD with GitHub Actions
-- Deployment to DockerHub
+✅ Model training & evaluation
 
----
+✅ Manual model quantization (float16)
 
-## Components
+✅ End-to-end testing & QA
 
-- **Dataset**: `sklearn.datasets.fetch_california_housing`
-- **Model**: `LinearRegression` (scikit-learn)
-- **Quantization**: Manual (via NumPy `float16`)
-- **Containerization**: Docker
-- **CI/CD**: GitHub Actions
-- **CD**: DockerHub image push via secrets
+✅ Containerization via Docker
 
----
+✅ CI/CD using GitHub Actions
 
-## Project Structure
+✅ Deployment to DockerHub
 
-| Step | Component       | Description                          |
-|------|------------------|--------------------------------------|
-| 1    | `train.py`       | Train and save model                 |
-| 2    | `test_train.py`  | Unit tests for training and metrics  |
-| 3    | `quantize.py`    | Manual model quantization (`float16`)|
-| 4    | `predict.py`     | Run full dataset prediction + summary|
-| 5    | `Dockerfile`     | Container to run prediction          |
-| 6    | `ci.yml`         | GitHub Actions CI/CD workflow        |
-| 7    | `reporting.py`   | Saves visual metric plots            |
-| 8    | `testing.py`     | Validates R² & MSE thresholds         |
+📁 Components Overview
+Step	File/Folder	Description
+1	src/train.py	Trains the model and saves it using joblib
+2	tests/test_train.py	Unit tests for training step
+3	src/quantize.py	Quantizes model using NumPy (float16)
+4	src/predict.py	Runs full dataset inference and saves output
+5	Dockerfile	Containerizes the model for portable deployment
+6	.github/workflows/ci.yml	CI/CD pipeline triggered on push to main
+7	reporting.py	Generates metrics_plot.png from evaluation results
+8	tests/testing.py	QA tests: R² & MSE thresholds, model checks
+9	tests/uat_tests.py	Final UAT validation across 20 checks
 
----
+📦 Docker Usage
+To run locally:
 
-## Docker Usage
-
-To build and run inside a container:
-
-```bash
+bash
+Copy
+Edit
 docker build -t linear-reg-app .
 docker run linear-reg-app
-To persist predictions locally:
+To persist predictions:
 
 bash
 Copy
 Edit
 docker run --rm -v "$(pwd)/models:/app/models" linear-reg-app
-CI/CD Pipeline Overview
-The pipeline is defined in .github/workflows/ci.yml, and triggered on every push to main.
+🚀 CI/CD Pipeline Overview
+The pipeline is defined in .github/workflows/ci.yml and is triggered on:
 
-📦 Stages:
-🧪 Setup & Unit Test
+Every push to the main branch
 
-🎯 Training and Quantize
+Manual trigger via GitHub UI
 
-🔨 Build Container
+🔄 Stages:
+Stage Name	Description
+🧪 Setup & Unit Test	Installs deps, runs unit tests (pytest)
+🎯 Training and Quantize	Trains model and performs quantization
+✅ QA	Evaluates metrics, generates visual plots
+🔨 Build Container	Builds the Docker image
+🧪 Test Container	Runs the Docker container for prediction
+🧪 UAT	Performs 20 automated checks on artifacts
+🚀 Deployment	Pushes image to DockerHub on success
 
-🧪 Test Container
+✅ Artifacts:
+models/model.joblib
 
-🚀 Deployment (DockerHub)
+models/model_quantized.joblib
 
-GitHub Actions Integration
-All metrics (metrics.json, quant_metrics.json, metrics_plot.png, predictions.json) are uploaded as artifacts
+models/metrics.json
 
-Full logs shown in GitHub Actions UI
+models/quant_metrics.json
 
-Deployment auto-pushes image to:
+models/predictions.json
 
-docker.io/piyushkumarai1066/linear-reg-app
+models/metrics_plot.png
 
-Benchmark & Evaluation
-This project uses the California Housing dataset to predict median house values using LinearRegression from scikit-learn. The target variable is house price (in $100,000).
+All available via GitHub Actions → Artifacts tab.
 
-Model Evaluation Metrics
-Metric	Expected Range	Actual (example run)	Interpretation
-R² Score	0.60 – 0.70	e.g., 0.6523	Acceptable linear fit
-MSE (Loss)	< 1.0	e.g., 0.5317	Errors within realistic range
+📊 Benchmark & Evaluation
+The model predicts median house values (in $100,000s) from the California Housing dataset using LinearRegression.
 
-All metrics are automatically evaluated and stored in models/metrics.json and models/quant_metrics.json.
+📈 Evaluation Metrics
+Metric	Expected Range	Example Run	Interpretation
+R² Score	0.60 – 0.70	~0.6523	Strong linear fit
+MSE	< 1.0	~0.5317	Acceptable predictive loss
 
-Sample Predictions
-A summary of full-dataset predictions is logged in predict.py, and top predictions are written to models/predictions.json.
+Evaluated automatically and logged to models/metrics.json and models/quant_metrics.json.
 
-Visual Reports
-The reporting.py script plots key evaluation metrics:
+🔍 Sample Prediction Output
+json
+Copy
+Edit
+{
+  "summary": {
+    "total_samples": 20640,
+    "min_prediction": 0.17,
+    "max_prediction": 4.72,
+    "mean_prediction": 2.07
+  },
+  "predictions": [...]
+}
+See models/predictions.json for the complete output.
 
-Output: models/metrics_plot.png
+📉 Visual Report
+The script reporting.py auto-generates a plot:
 
-Reference Benchmarks
+File: models/metrics_plot.png
+
+Metrics: Bar chart showing R² and MSE values
+
+📌 Reference Benchmarks
 Model	R² Score	MSE
 Linear Regression	0.60–0.68	0.5–0.8
 Random Forest Regressor	~0.82	~0.2
 Gradient Boosting (XGB)	~0.85	~0.18
 
-Conclusion
-This project demonstrates a full MLOps workflow including training, testing, quantization, containerization, and continuous deployment — all automated via GitHub Actions.
+This project hits baseline targets using Linear Regression alone — without feature engineering or complex tuning — to highlight CI/CD and MLOps best practices.
 
-The setup emphasizes:
+✅ Final Notes
+🔁 Fully reproducible pipeline using joblib, float16, and no random seeds
 
-Code reproducibility
+🧪 20+ UAT assertions validate every artifact and metric
 
-CI/CD pipeline maturity
+🐳 Deployed Docker image available at:
 
-Deployment readiness
+bash
+Copy
+Edit
+docker pull docker.io/piyushkumarai1066/linear-reg-app:latest
+🙌 Author
+Piyush Kumar
+Roll No: G24AI1066
+Indian Institute of Technology, Jodhpur
