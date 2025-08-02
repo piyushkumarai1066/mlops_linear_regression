@@ -3,7 +3,6 @@ name: California Housing - MLOps Workflow
 on:
   push:
     branches: [main]
-
   workflow_dispatch:
 
 jobs:
@@ -57,6 +56,12 @@ jobs:
           name: quantized-model
           path: models/model_quantized.joblib
 
+      - name: Upload metrics.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-metrics
+          path: models/metrics.json
+
       - name: Upload quant_metrics.json
         uses: actions/upload-artifact@v4
         with:
@@ -90,6 +95,12 @@ jobs:
           name: quantized-model
           path: models
 
+      - name: Download model metrics
+        uses: actions/download-artifact@v4
+        with:
+          name: model-metrics
+          path: models
+
       - name: Download quantized metrics
         uses: actions/download-artifact@v4
         with:
@@ -104,12 +115,6 @@ jobs:
 
       - name: Run prediction script
         run: PYTHONPATH=. python src/predict.py
-
-      - name: Upload metrics.json
-        uses: actions/upload-artifact@v4
-        with:
-          name: model-metrics
-          path: models/metrics.json
 
       - name: Upload metrics_plot.png
         uses: actions/upload-artifact@v4
@@ -171,6 +176,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: quantized-model
+          path: models
+
+      - name: Download model metrics
+        uses: actions/download-artifact@v4
+        with:
+          name: model-metrics
           path: models
 
       - name: Download quantized metrics
