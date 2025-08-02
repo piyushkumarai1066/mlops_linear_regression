@@ -6,7 +6,7 @@ on:
 
 jobs:
   test-suite:
-    name: 🧪 Setup & Unit Test
+    name: Setup & Unit Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
           PYTHONPATH=./ pytest
 
   train-and-quantize:
-    name: 🎯 Training and Quantize
+    name: Training and Quantize
     needs: test-suite
     runs-on: ubuntu-latest
     steps:
@@ -46,7 +46,7 @@ jobs:
         run: PYTHONPATH=. python src/quantize.py
 
       - name: Evaluate Trained Model
-        run: PYTHONPATH=. python src/tests/testing.py
+        run: PYTHONPATH=. python tests/testing.py
 
       - name: Generate Metrics Report
         run: PYTHONPATH=. python reporting.py
@@ -70,7 +70,7 @@ jobs:
           path: models/quant_metrics.json
 
   build-and-test-container:
-    name: 🛠️ Build and Test Container
+    name: Build and Test Container
     needs: train-and-quantize
     runs-on: ubuntu-latest
     steps:
@@ -83,7 +83,7 @@ jobs:
         run: docker run linear-reg-app
 
   deployment:
-    name: 🚀 Deployment (DockerHub)
+    name: Deployment (DockerHub)
     needs: build-and-test-container
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
