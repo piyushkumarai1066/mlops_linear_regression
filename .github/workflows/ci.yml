@@ -173,6 +173,12 @@ jobs:
           name: quantized-model
           path: models
 
+      - name: Download quantized metrics
+        uses: actions/download-artifact@v4
+        with:
+          name: quantized-metrics
+          path: models
+
       - name: Download predictions
         uses: actions/download-artifact@v4
         with:
