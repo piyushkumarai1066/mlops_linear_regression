@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
 
+  workflow_dispatch:  # Enables manual trigger from GitHub UI
+
 jobs:
   test-suite:
     name: Setup & Unit Test
@@ -25,7 +27,7 @@ jobs:
           PYTHONPATH=./ pytest
 
   train-and-quantize:
-    name: Training and Quantize
+    name: 🎯 Training and Quantize
     needs: test-suite
     runs-on: ubuntu-latest
     steps:
@@ -45,10 +47,25 @@ jobs:
       - name: Quantize Model
         run: PYTHONPATH=. python src/quantize.py
 
-      - name: Evaluate Trained Model
-        run: PYTHONPATH=. python tests/testing.py
+  qa-check:
+    name: ✅ QA
+    needs: train-and-quantize
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-      - name: Generate Metrics Report
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Model Testing
+        run: PYTHONPATH=. python src/tests/testing.py
+
+      - name: Generate Evaluation Plot
         run: PYTHONPATH=. python reporting.py
 
       - name: Upload metrics.json
@@ -69,9 +86,15 @@ jobs:
           name: quantized-metrics
           path: models/quant_metrics.json
 
+      - name: Upload predictions.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-predictions
+          path: models/predictions.json
+
   build-container:
     name: 🔨 Build Container
-    needs: train-and-quantize
+    needs: qa-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
