@@ -86,6 +86,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Rebuild Docker Image (needed in this job too)
+        run: docker build -t linear-reg-app .
+
       - name: Run Docker Container
         run: docker run linear-reg-app
 
