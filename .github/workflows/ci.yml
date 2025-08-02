@@ -41,7 +41,7 @@ jobs:
         run: PYTHONPATH=. python src/quantize.py
 
       - name: Evaluate trained model
-        run: PYTHONPATH=. python src/tests/testing.py
+        run: PYTHONPATH=. python tests/testing.py
 
       - name: Generate metrics report
         run: PYTHONPATH=. python reporting.py
