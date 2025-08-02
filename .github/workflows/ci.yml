@@ -57,6 +57,12 @@ jobs:
           name: quantized-model
           path: models/model_quantized.joblib
 
+      - name: Upload quant_metrics.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: quantized-metrics
+          path: models/quant_metrics.json
+
   qa-check:
     name: ✅ QA
     needs: train-and-quantize
@@ -84,6 +90,12 @@ jobs:
           name: quantized-model
           path: models
 
+      - name: Download quantized metrics
+        uses: actions/download-artifact@v4
+        with:
+          name: quantized-metrics
+          path: models
+
       - name: Run Model Evaluation Tests
         run: PYTHONPATH=. python tests/testing.py
 
@@ -104,12 +116,6 @@ jobs:
         with:
           name: metrics-visual
           path: models/metrics_plot.png
-
-      - name: Upload quant_metrics.json
-        uses: actions/upload-artifact@v4
-        with:
-          name: quantized-metrics
-          path: models/quant_metrics.json
 
       - name: Upload predictions.json
         uses: actions/upload-artifact@v4
