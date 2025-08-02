@@ -12,6 +12,7 @@ def run_prediction():
 
     logging.info("Fetching California housing data...")
     X, _ = fetch_california_housing(return_X_y=True)
+    logging.info(f"Dataset shape: {X.shape} — Total samples: {X.shape[0]}")
 
     logging.info(f"Generating predictions for all {X.shape[0]} samples...")
     preds = model.predict(X)
