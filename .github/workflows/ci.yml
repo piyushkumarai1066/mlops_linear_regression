@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-suite:
-    name: Setup & Unit Test
+    name: 🧪 Setup & Unit Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -62,8 +62,8 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Model Testing
-        run: PYTHONPATH=. python src/tests/testing.py
+      - name: Run Model Evaluation Tests
+        run: PYTHONPATH=. python tests/testing.py
 
       - name: Generate Evaluation Plot
         run: PYTHONPATH=. python reporting.py
@@ -115,9 +115,27 @@ jobs:
       - name: Run Docker Container
         run: docker run linear-reg-app
 
+  uat-stage:
+    name: 🧪 UAT
+    needs: test-container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Final End-to-End UAT Tests (20 checks)
+        run: PYTHONPATH=. python tests/uat_tests.py
+
   deployment:
     name: 🚀 Deployment (DockerHub)
-    needs: test-container
+    needs: uat-stage
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
