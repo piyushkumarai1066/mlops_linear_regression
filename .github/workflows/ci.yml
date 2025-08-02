@@ -179,11 +179,9 @@ jobs:
           name: quantized-metrics
           path: models
 
-      - name: Download predictions
-        uses: actions/download-artifact@v4
-        with:
-          name: full-predictions
-          path: models
+      # 💡 Run prediction again to regenerate full predictions.json
+      - name: Regenerate Full Predictions
+        run: PYTHONPATH=. python src/predict.py
 
       - name: Run Final End-to-End UAT Tests (20 checks)
         run: PYTHONPATH=. python tests/uat_tests.py
