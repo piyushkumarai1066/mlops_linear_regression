@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
 
-  workflow_dispatch:  # Enables manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   test-suite:
@@ -19,12 +19,10 @@ jobs:
           python-version: '3.10'
 
       - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run Pytest Unit Tests
-        run: |
-          PYTHONPATH=./ pytest
+        run: PYTHONPATH=./ pytest
 
   train-and-quantize:
     name: 🎯 Training and Quantize
@@ -47,6 +45,18 @@ jobs:
       - name: Quantize Model
         run: PYTHONPATH=. python src/quantize.py
 
+      - name: Upload trained model
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: models/model.joblib
+
+      - name: Upload quantized model
+        uses: actions/upload-artifact@v4
+        with:
+          name: quantized-model
+          path: models/model_quantized.joblib
+
   qa-check:
     name: ✅ QA
     needs: train-and-quantize
@@ -61,6 +71,18 @@ jobs:
 
       - name: Install Dependencies
         run: pip install -r requirements.txt
+
+      - name: Download trained model
+        uses: actions/download-artifact@v4
+        with:
+          name: trained-model
+          path: models
+
+      - name: Download quantized model
+        uses: actions/download-artifact@v4
+        with:
+          name: quantized-model
+          path: models
 
       - name: Run Model Evaluation Tests
         run: PYTHONPATH=. python tests/testing.py
@@ -129,6 +151,18 @@ jobs:
 
       - name: Install Dependencies
         run: pip install -r requirements.txt
+
+      - name: Download trained model
+        uses: actions/download-artifact@v4
+        with:
+          name: trained-model
+          path: models
+
+      - name: Download quantized model
+        uses: actions/download-artifact@v4
+        with:
+          name: quantized-model
+          path: models
 
       - name: Run Final End-to-End UAT Tests (20 checks)
         run: PYTHONPATH=. python tests/uat_tests.py
